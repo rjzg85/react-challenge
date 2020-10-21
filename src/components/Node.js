@@ -8,11 +8,15 @@ import {
   ExpansionPanelDetails,
   makeStyles,
   Box,
+  CircularProgress,
 } from "@material-ui/core";
 import colors from "../constants/colors";
 import Status from "./Status";
+import { connect } from "react-redux";
+import Block from "./Block";
 
-const Node = ({ node, expanded, toggleNodeExpanded }) => {
+const Node = ({ node, expanded, toggleNodeExpanded, blockstate }) => {
+  // console.log("blockstate", blockstate);
   const classes = useStyles();
   return (
     <ExpansionPanel
@@ -46,7 +50,15 @@ const Node = ({ node, expanded, toggleNodeExpanded }) => {
         </Box>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Typography>Blocks go here</Typography>
+        <div className={classes.blocksContainer}>
+          {blockstate.loading ? (
+            <CircularProgress />
+          ) : (
+            blockstate.blocks.map((block) => (
+              <Block block={block} key={block.id} />
+            ))
+          )}
+        </div>
       </ExpansionPanelDetails>
     </ExpansionPanel>
   );
@@ -96,9 +108,15 @@ const useStyles = makeStyles((theme) => ({
     color: colors.faded,
     lineHeight: 2,
   },
+  blocksContainer: {
+    display: "block",
+    width: "100%",
+    textAlign: "center",
+  },
 }));
 
 Node.propTypes = {
+  blockstate: PropTypes.object.isRequired,
   node: PropTypes.shape({
     url: PropTypes.string,
     online: PropTypes.bool,
@@ -109,4 +127,9 @@ Node.propTypes = {
   toggleNodeExpanded: PropTypes.func.isRequired,
 };
 
-export default Node;
+const mapStateToProps = (state) => {
+  // console.log(state);
+  return { blockstate: state.blocks };
+};
+
+export default connect(mapStateToProps)(Node);

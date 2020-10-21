@@ -1,10 +1,11 @@
-import fetch from 'cross-fetch';
-import * as types from '../constants/actionTypes';
+import fetch from "cross-fetch";
+import * as types from "../constants/actionTypes";
+import { setAlert } from "./alert";
 
 const checkNodeStatusStart = (node) => {
   return {
     type: types.CHECK_NODE_STATUS_START,
-    node
+    node,
   };
 };
 
@@ -12,11 +13,11 @@ const checkNodeStatusSuccess = (node, res) => {
   return {
     type: types.CHECK_NODE_STATUS_SUCCESS,
     node,
-    res
+    res,
   };
 };
 
-const checkNodeStatusFailure = node => {
+const checkNodeStatusFailure = (node) => {
   return {
     type: types.CHECK_NODE_STATUS_FAILURE,
     node,
@@ -29,7 +30,8 @@ export function checkNodeStatus(node) {
       dispatch(checkNodeStatusStart(node));
       const res = await fetch(`${node.url}/api/v1/status`);
 
-      if(res.status >= 400) {
+      if (res.status >= 400) {
+        dispatch(setAlert("Something went wrong"));
         dispatch(checkNodeStatusFailure(node));
       }
 
@@ -37,6 +39,7 @@ export function checkNodeStatus(node) {
 
       dispatch(checkNodeStatusSuccess(node, json));
     } catch (err) {
+      dispatch(setAlert(`${node.name}: ${err.message}`));
       dispatch(checkNodeStatusFailure(node));
     }
   };
@@ -44,7 +47,7 @@ export function checkNodeStatus(node) {
 
 export function checkNodeStatuses(list) {
   return (dispatch) => {
-    list.forEach(node => {
+    list.forEach((node) => {
       dispatch(checkNodeStatus(node));
     });
   };

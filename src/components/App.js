@@ -6,6 +6,7 @@ import NotFoundPage from "./NotFoundPage";
 import PropTypes from "prop-types";
 import React from "react";
 import { hot } from "react-hot-loader";
+import Alert from "../components/Alert";
 
 // This is a class-based component because the current
 // version of hot reloading won't hot reload a stateless
@@ -15,6 +16,7 @@ class App extends React.Component {
   render() {
     return (
       <Router>
+        <Alert />
         <Switch>
           <Route exact path="/" component={Nodes} />
           <Route component={NotFoundPage} />
@@ -25,7 +27,7 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-  children: PropTypes.element
+  children: PropTypes.element,
 };
 
 export default hot(module)(App);
